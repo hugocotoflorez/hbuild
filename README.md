@@ -1,79 +1,29 @@
-# Hugo's very simple build tool
+# Hugo's build tool
 
 ## Options file
 
 The file have to following the HCF stanard.
 
-### Variables field
+### Default field
 
-``` hcf
-globals:
-    variable1 variable 1 value
-    ...
-    varibaleN variable N value
-```
+The default field stores global variables and the default exec entry point. All the variables in default can be referenced only by it's name.
 
-- Variables from global field can be accessed from elsewhere
-as if their where locals.
-- Local variables can be accessed using $*keyname* where keyname is a valid key name.
-- External variables can be accesed using $*field*.*keyname* where field is the fieldname where the key is placed.
+### Exec
 
-Where the first word is the key and the remainig text is the value. You can write comments using "//" and the comment text after it.
+The entry field (default by default) have to had a exec entry. It can only have keys joined by spaces. Each key  value would be executed, from left to right.
 
-### Fields
+### Implicit exec
 
-A field is a space with local variables and local sequences.
+In the exec entry there would be key entries or field names. If a field name is found, it executes their exec.
 
-### Sequences
+### Priority
 
-A sequence is a entry whose value is a command sequence. It can be defined as a normal variable.
+Local variables have more priority than global ones.
 
-The exec sequence is the entry point for executing commands. The exec sequence have to call other sequences. As the exec sequence is an especial sequence it cant have explicit commands. It just can call other sequences. To call other sequences it have to had their names, by execution order from left to right, splitted by a space.
+### Extern keys
 
-```hcf
-default:
-    filename a.out      // local variable
-    exec    1 2 3       // main method
+If it's needed to acced a key that is defined in another field which is not the default, it can be accesed using *field*.*key*.
 
-// The following entries are called if their
-// key name is in the exec sequence
+### Accessing variables
 
-    1       $cc $flags $src -L $inc $filename
-    2       ./$filename
-    3       rm $filename
-```
-
-### Example file
-
-```
-globals:
-    cc      gcc
-    flags   -Wall -Wextra -fsanitize=address,null
-    src     ./src/*
-    inc     ./include
-
-default:
-    filename a.out      // local variable
-    exec    1 2 3       // main method
-
-// The following entries are called if their
-// key name is in the exec sequence
-
-    1       $cc $flags $src -L $inc $filename
-    2       ./$filename
-    3       rm $filename
-
-
-
-// external variable example
-
-some_other_field:
-    local_variable 2
-
-this_field:
-    local_variable = $some_other_field.local_variable
-
-
-// Restrictions
-- field keys cant have '.' or spaces
-```
+For accessing a variable it is needed to use the '$' symbol before the local key name or the field.key entry.

@@ -7,7 +7,7 @@ default:
     exec     compile
 
 compile:
-    exec    1
+    exec    1 install
     1       $cc $flags $src -L $inc -o $filename
 
 install:

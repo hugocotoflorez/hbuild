@@ -4,10 +4,10 @@ default:
     src     ./src/*
     inc     ./include
     filename hbuild
-    exec     compile
+    exec     compile install
 
 compile:
-    exec    1 install
+    exec    1
     1       $cc $flags $src -L $inc -o $filename
 
 install:

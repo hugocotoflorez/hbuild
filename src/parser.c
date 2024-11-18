@@ -163,7 +163,7 @@ hcf_load(const char *file)
 
     if (!f)
     {
-        perror("Hcf_load");
+        perror(file);
         return (__HashTable) { 0 };
     }
 

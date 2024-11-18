@@ -13,3 +13,9 @@ compile:
 install:
     exec    1
     1       mv ./$filename ~/.local/bin/$filename
+
+git:
+    exec    add commit push
+    add     git add .
+    commit  git commit -m "Auto commit"
+    push    git push

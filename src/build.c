@@ -6,7 +6,7 @@
 #define MAXLEN 1024
 
 /* Globals */
-char *entry_field;
+char *current_field;
 
 void analize(HcfOpts opts, char *exec_seq);
 
@@ -34,8 +34,6 @@ execute(HcfOpts opts, char *seq)
     char *key_sep;
     char *value;
 
-    // printf("[SEQ] %s\n", seq);
-
     if (!seq)
     {
         printf("Invalid sequence!\n");
@@ -45,16 +43,18 @@ execute(HcfOpts opts, char *seq)
     key_sep = seq;
     while (key_sep && (key_intro = strchr(seq, '$')))
     {
+        /* Remove the $ and append all the text before it to buf */
         *key_intro = '\0';
         strcat(buf, seq);
 
+        /* Find the next " " (end of varname) */
         key_sep = strchr(key_intro + 1, ' ');
         if (key_sep)
             *key_sep = '\0';
+        /* If it's null, the key is the last thing in the string */
 
-
-        // printf("Entry field: %s\n", entry_field);
-        if ((value = extend_get(opts, entry_field, key_intro + 1)))
+        /* Getting value from current field */
+        if ((value = extend_get(opts, current_field, key_intro + 1)))
             strcat(buf, value);
 
         /* Getting from default field */
@@ -62,16 +62,20 @@ execute(HcfOpts opts, char *seq)
             strcat(buf, value);
 
         else
-            printf("Can not found %s key!\n", key_intro + 1);
+            printf("Can not found %s\n", key_intro + 1);
 
+        /* Appending a " " just to avoid overlapping */
         strcat(buf, " ");
+
+        /* Move seq to the next character after the next ' ' */
         seq = key_sep + 1;
     }
-    if (key_sep && *seq)
-        strcat (buf, seq);
-    /* Si acaba por un comando constante y no definido en
-     * otro campo seguramente no lo pille */
 
+    /* If there are text remaining that is not in the buffer */
+    if (key_sep && *seq)
+        strcat(buf, seq);
+
+    /* Execute the commands in buffer */
     printf("> exec: %s\n", buf);
     system(buf);
 }
@@ -79,80 +83,103 @@ execute(HcfOpts opts, char *seq)
 void
 analize(HcfOpts opts, char *exec_seq)
 {
-    char *entry_point;
+    char *value_start;
     char *cur_seq;
     char *temp;
     char *c;
 
-    entry_point = exec_seq;
+    /* Initialize the value start pointer */
+    value_start = exec_seq;
 
-    while (entry_point && *entry_point)
+    while (value_start && *value_start)
     {
-        c = strchr(entry_point, ' ');
+        /* Cut the string at the next ' ' */
+        c = strchr(value_start, ' ');
         if (c)
             *c = '\0';
 
-        // printf("Current entry: (%s).%s\n", entry_field, entry_point);
-        cur_seq = extend_get(opts, entry_field, entry_point);
-        // printf("CURSEQ: %s\n", cur_seq);
+        /* Find for the current entry in the exec sequence */
+        cur_seq = extend_get(opts, current_field, value_start);
+
         if (cur_seq)
+            /* If it is found, execute the sequence in this function */
             execute(opts, cur_seq);
 
         /* If it is a field name, execute its exec */
-        else if (hcf_get_field(opts, entry_field))
+        else if (hcf_get_field(opts, current_field))
         {
-            temp        = entry_field;
-            entry_field = entry_point;
-            analize(opts, extend_get(opts, entry_point, "exec"));
-            entry_field = temp;
+            /* Change the entry field to make it feel as
+             * the default entry */
+            temp          = current_field;
+            current_field = value_start;
+
+            /* Call analize recursively from the value exec entry */
+            analize(opts, extend_get(opts, value_start, "exec"));
+
+            /* Restore entry field */
+            current_field = temp;
         }
 
         else
-            printf("Invalid entry!");
+            printf("Invalid entry %s\n", value_start);
 
 
-        /* Removing spaces */
-
+        /* Remove remaining spaces */
         if (c)
             do
             {
                 ++c;
             } while (*c == ' ');
 
-        entry_point = c;
+        /* Move the value_start pointer to the first char after
+         * the spaces */
+        value_start = c;
     }
+}
+
+
+static void
+init()
+{
+    HcfOpts opts;
+    char   *exec_seq;
+
+    /* Load the default file. If it is not
+     * found this function print a brief
+     * error msg */
+    opts = hcf_load("build.hcf");
+
+    /* This is quite weird but I dont
+     * implement error checking */
+    if (opts.node_arr == NULL)
+        /* Opts were not created */
+        exit(1);
+
+    /* Find the first entry point */
+    if (!(exec_seq = hcf_get(opts, current_field, "exec")))
+    {
+        printf("Can not find entry point %s.exec!\n", current_field);
+        hcf_destroy(&opts);
+        exit(1);
+    }
+
+    /* This function call recursively so it finally end by executing
+     * all the needed instructions */
+    analize(opts, exec_seq);
+
+    hcf_destroy(&opts);
 }
 
 
 int
 main(int argc, char *argv[])
 {
-    HcfOpts opts;
-    char   *exec_seq;
-
     if (argc == 2)
-        entry_field = argv[1];
+        current_field = argv[1];
     else
-        entry_field = "default";
+        current_field = "default";
 
-    opts = hcf_load("build.hcf");
+    init();
 
-    /* Opts were not created */
-    if (opts.node_arr == NULL)
-        exit(1);
-
-    exec_seq = hcf_get(opts, entry_field, "exec");
-
-    if (exec_seq == NULL)
-    {
-        printf("Can not find entry point %s.exec!\n", entry_field);
-        hcf_destroy(&opts);
-    }
-
-    // printf("Exec sequence: %s\n", exec_seq);
-
-    analize(opts, exec_seq);
-
-    hcf_destroy(&opts);
     return 0;
 }

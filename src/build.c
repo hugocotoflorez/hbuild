@@ -5,10 +5,14 @@
 
 #define MAXLEN 1024
 
+static void init();
+void        analize(HcfOpts, char *);
+void        execute(HcfOpts, char *);
+char       *extend_get(HcfOpts, char *, char *);
+
 /* Globals */
 char *current_field;
 
-void analize(HcfOpts opts, char *exec_seq);
 
 char *
 extend_get(HcfOpts opts, char *default_field, char *extend_key)
@@ -18,11 +22,10 @@ extend_get(HcfOpts opts, char *default_field, char *extend_key)
     c = strchr(extend_key, '.');
 
     if (!c)
-    {
         return hcf_get(opts, default_field, extend_key);
-    }
 
     *c = '\0';
+
     return hcf_get(opts, extend_key, c + 1);
 }
 
@@ -47,28 +50,42 @@ execute(HcfOpts opts, char *seq)
         *key_intro = '\0';
         strcat(buf, seq);
 
-        /* Find the next " " (end of varname) */
-        key_sep = strchr(key_intro + 1, ' ');
-        if (key_sep)
-            *key_sep = '\0';
-        /* If it's null, the key is the last thing in the string */
+        /* Using $(...) varname matching */
+        if (*++key_intro == '(')
+        {
+            /* Find the next ")" (end of varname) */
+            key_sep = strchr(key_intro, ')');
+            if (key_sep)
+                *key_sep = '\0';
+            /* If it's null, the key is the last thing in the string */
+        }
+
+        else
+        {
+            /* Find the next " " (end of varname) */
+            key_sep = strchr(key_intro, ' ');
+            if (key_sep)
+                *key_sep = '\0';
+            /* If it's null, the key is the last thing in the string */
+        }
 
         /* Getting value from current field */
-        if ((value = extend_get(opts, current_field, key_intro + 1)))
+        if ((value = extend_get(opts, current_field, key_intro)))
             strcat(buf, value);
 
         /* Getting from default field */
-        else if ((value = extend_get(opts, "default", key_intro + 1)))
+        else if ((value = extend_get(opts, "default", key_intro)))
             strcat(buf, value);
 
         else
-            printf("Can not found %s\n", key_intro + 1);
+            printf("Can not found %s\n", key_intro);
 
-        /* Appending a " " just to avoid overlapping */
-        strcat(buf, " ");
+        /* Appending a " " just to avoid overlapping if using " " sep */
+        if (*key_intro == '(')
+            strcat(buf, " ");
 
         /* Move seq to the next character after the next ' ' */
-        seq = key_sep + 1;
+        seq = key_sep;
     }
 
     /* If there are text remaining that is not in the buffer */
@@ -129,7 +146,7 @@ analize(HcfOpts opts, char *exec_seq)
             do
             {
                 ++c;
-            } while (*c == ' ');
+            } while (*c == ' ' || *c == '\t');
 
         /* Move the value_start pointer to the first char after
          * the spaces */

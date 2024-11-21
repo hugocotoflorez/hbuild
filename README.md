@@ -2,7 +2,7 @@
 
 ## Options file
 
-The file have to following the [*HCF standard*](https://github.com/hugocotoflorez/vshcfp) and be named `build.hcf`.
+The file have to follow the [*HCF standard*](https://github.com/hugocotoflorez/vshcfp) and be named `build.hcf`.
 
 ### Default field
 

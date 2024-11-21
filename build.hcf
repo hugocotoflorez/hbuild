@@ -1,3 +1,7 @@
+credits:
+    author  Hugo Coto Florez
+    about   Hugo's building tool.
+
 default:
     cc      gcc
     flags   -Wall -Wextra -fsanitize=address,null
@@ -8,7 +12,7 @@ default:
 
 compile:
     exec    1
-    1       $cc $flags $src -L $inc -o $filename
+    1       $cc -I $inc $flags $src -o $filename
 
 install:
     exec    1

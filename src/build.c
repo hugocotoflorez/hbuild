@@ -25,7 +25,6 @@ extend_get(HcfOpts opts, char *default_field, char *extend_key)
         return hcf_get(opts, default_field, extend_key);
 
     *c = '\0';
-
     return hcf_get(opts, extend_key, c + 1);
 }
 
@@ -47,27 +46,23 @@ execute(HcfOpts opts, char *seq)
     while (key_sep && (key_intro = strchr(seq, '$')))
     {
         /* Remove the $ and append all the text before it to buf */
-        *key_intro = '\0';
+        *key_intro++ = '\0';
         strcat(buf, seq);
 
-        /* Using $(...) varname matching */
-        if (*++key_intro == '(')
+        /* find the next ')' (end of varname) */
+        if (*key_intro == '(')
         {
-            /* Find the next ")" (end of varname) */
-            key_sep = strchr(key_intro, ')');
-            if (key_sep)
-                *key_sep = '\0';
-            /* If it's null, the key is the last thing in the string */
+            key_sep = strchr(++key_intro, ')');
         }
-
         else
         {
             /* Find the next " " (end of varname) */
             key_sep = strchr(key_intro, ' ');
-            if (key_sep)
-                *key_sep = '\0';
             /* If it's null, the key is the last thing in the string */
         }
+
+        if (key_sep)
+            *key_sep = '\0';
 
         /* Getting value from current field */
         if ((value = extend_get(opts, current_field, key_intro)))
@@ -80,12 +75,12 @@ execute(HcfOpts opts, char *seq)
         else
             printf("Can not found %s\n", key_intro);
 
-        /* Appending a " " just to avoid overlapping if using " " sep */
-        if (*key_intro == '(')
+        if (key_intro[-1] != '(')
+            /* If using normal matching, append a space */
             strcat(buf, " ");
 
-        /* Move seq to the next character after the next ' ' */
-        seq = key_sep;
+        /* Move seq to the next character after the next separator */
+        seq = key_sep + 1;
     }
 
     /* If there are text remaining that is not in the buffer */
@@ -160,6 +155,7 @@ init()
 {
     HcfOpts opts;
     char   *exec_seq;
+    char   *info_str;
 
     /* Load the default file. If it is not
      * found this function print a brief
@@ -171,6 +167,15 @@ init()
     if (opts.node_arr == NULL)
         /* Opts were not created */
         exit(1);
+
+    if (hcf_get_field(opts, "credits"))
+    {
+        if ((info_str = hcf_get(opts, "credits", "about")))
+            printf("About: %s\n", info_str);
+
+        if ((info_str = hcf_get(opts, "credits", "author")))
+            printf("Author: %s\n", info_str);
+    }
 
     /* Find the first entry point */
     if (!(exec_seq = hcf_get(opts, current_field, "exec")))

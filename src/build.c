@@ -168,14 +168,11 @@ init()
         /* Opts were not created */
         exit(1);
 
-    if (hcf_get_field(opts, "credits"))
-    {
-        if ((info_str = hcf_get(opts, "credits", "about")))
-            printf("About: %s\n", info_str);
+    if ((info_str = hcf_get(opts, "credits", "about")))
+        printf("About: %s\n", info_str);
 
-        if ((info_str = hcf_get(opts, "credits", "author")))
-            printf("Author: %s\n", info_str);
-    }
+    if ((info_str = hcf_get(opts, "credits", "author")))
+        printf("Author: %s\n", info_str);
 
     /* Find the first entry point */
     if (!(exec_seq = hcf_get(opts, current_field, "exec")))

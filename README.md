@@ -81,6 +81,6 @@ hbuild install
 ```
 
 > [!CAUTION]
-> ~/.local/bin/ have to be on path.
+> `~/.local/bin/` have to be on path.
 > You can add it to path by adding the following line to the shell config (.bashrc): `export PATH="$PATH:$HOME/.local/bin"`
 

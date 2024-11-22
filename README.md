@@ -61,21 +61,26 @@ You can compile it with the makefile. If it is yet compiled, it can recompile it
 
 ### First installation
 
-1. Clone this repo
+- Clone this repo
 
 ```sh
 git clone https://github.com/hugocotoflorez/hbuild
 cd hbuild
 ```
 
-2. Compile the proyect
+- Compile the proyect
 
 ```sh
 make
 ```
 
-3. Install it locally
+- Install it locally
 
 ```sh
 hbuild install
 ```
+
+> [!CAUTION]
+> ~/.local/bin/ have to be on path.
+> You can add it to path by adding the following line to the shell config (.bashrc): `export PATH="$PATH:$HOME/.local/bin"`
+

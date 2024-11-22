@@ -11,12 +11,10 @@ Build C proyects (and execute shell commands).
 
 **ENTRY-FIELD**: Entry field whose `exec` is going to be executed first. By default it is the ***default*** field.
 
-**FILENAME**: File name that follows the *HCF standard*. The default filename is ***build.hcf***.
+**FILENAME**: File name that follows the [*HCF standard*](https://github.com/hugocotoflorez/vshcfp). The default filename is ***build.hcf***.
 
 
 ## Options file
-
-The file have to follow the [*HCF standard*](https://github.com/hugocotoflorez/vshcfp). By default the filename is ***build.hcf***, but it can be changed using `-f <options-file>`.
 
 ### Default field
 

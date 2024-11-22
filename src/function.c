@@ -16,5 +16,8 @@ inline char *
 hcf_get(HcfOpts opts, const char *field, const char *key)
 {
     __HashTable *table = __hashmap_get(opts, field, NULL);
-    return __hashmap_get(*table, key, NULL);
+    if (table)
+        return __hashmap_get(*table, key, NULL);
+
+    return NULL;
 }

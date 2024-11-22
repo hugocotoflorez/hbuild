@@ -74,9 +74,6 @@ __hashmap_get(__HashTable table, const char *key, void **value)
     HashTableNode *node;
     size_t         index;
 
-    if (key == NULL)
-        return NULL;
-
     index = __hashmap_key(table, key);
     node  = table.node_arr + index;
 

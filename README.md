@@ -22,7 +22,7 @@ If it's needed to acced a key that is defined in another field which is not the 
 
 ### Accessing variables
 
-For accessing a variable it is needed to use the '$' symbol before the local key name or the field.key entry.
+For accessing a variable it is needed to use the '$' symbol before the local key name or the field.key entry. If the text between the `$` and the next ` ` is not just the variable name, it can be specified using `$(varname)other_text`.
 
 ## Example
 ```hcf

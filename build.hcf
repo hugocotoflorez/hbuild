@@ -1,7 +1,3 @@
-credits:
-    author  Hugo Coto Florez
-    about   Hugo's building tool.
-
 default:
     cc      gcc
     flags   -Wall -Wextra -fsanitize=address,null

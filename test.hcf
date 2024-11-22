@@ -1,0 +1,8 @@
+default:
+    h       Hello
+    w       world
+    exec    print
+
+print:
+    exec    1
+    1       echo $(h), $(w)!

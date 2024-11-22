@@ -5,10 +5,9 @@
 
 #define MAXLEN 1024
 
-static void init();
-void        analize(HcfOpts, char *);
-void        execute(HcfOpts, char *);
-char       *extend_get(HcfOpts, char *, char *);
+void  analize(HcfOpts, char *);
+void  execute(HcfOpts, char *);
+char *extend_get(HcfOpts, char *, char *);
 
 /* Globals */
 char *current_field;
@@ -151,7 +150,7 @@ analize(HcfOpts opts, char *exec_seq)
 
 
 static void
-init()
+init(const char *filename)
 {
     HcfOpts opts;
     char   *exec_seq;
@@ -160,7 +159,7 @@ init()
     /* Load the default file. If it is not
      * found this function print a brief
      * error msg */
-    opts = hcf_load("build.hcf");
+    opts = hcf_load(filename);
 
     /* This is quite weird but I dont
      * implement error checking */
@@ -189,16 +188,25 @@ init()
     hcf_destroy(&opts);
 }
 
+const char *
+__get_filename(int argc, char *argv[])
+{
+    if (argc >= 3 && !strcmp(argv[argc - 2], "-f"))
+        return argv[argc - 1];
+
+    return "build.hcf";
+}
 
 int
 main(int argc, char *argv[])
 {
-    if (argc == 2)
-        current_field = argv[1];
-    else
+    if (argc % 2)
         current_field = "default";
+    else
+        /* There is only 1 argument or three (plus the executable name)*/
+        current_field = argv[1];
 
-    init();
+    init(__get_filename(argc, argv));
 
     return 0;
 }

@@ -1,8 +1,22 @@
 # Hugo's build tool
 
+## NAME
+hbuild - Hugo's building tool.
+
+## SYNOPSIS
+`hbuild [ENTRY-FIELD] [-f FILENAME]`
+
+## DESCRIPTION
+Build C proyects (and execute shell commands).
+
+**ENTRY-FIELD**: Entry field whose `exec` is going to be executed first. By default it is the ***default*** field.
+
+**FILENAME**: File name that follows the *HCF standard*. The default filename is ***build.hcf***.
+
+
 ## Options file
 
-The file have to follow the [*HCF standard*](https://github.com/hugocotoflorez/vshcfp) and be named `build.hcf`.
+The file have to follow the [*HCF standard*](https://github.com/hugocotoflorez/vshcfp). By default the filename is ***build.hcf***, but it can be changed using `-f <options-file>`.
 
 ### Default field
 
@@ -46,3 +60,24 @@ install:
 ## How to Install
 
 You can compile it with the makefile. If it is yet compiled, it can recompile itself with the given build.hcf file.
+
+### First installation
+
+1. Clone this repo
+
+```sh
+git clone https://github.com/hugocotoflorez/hbuild
+cd hbuild
+```
+
+2. Compile the proyect
+
+```sh
+make
+```
+
+3. Install it locally
+
+```sh
+hbuild install
+```

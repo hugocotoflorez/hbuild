@@ -1,6 +1,6 @@
 INCL = ./include
 SRC = ./src/*.c
-FLAGS = -Wall -Wextra -fsanitize=address,null -O0 -g
+FLAGS = -O3
 CC = gcc
 
 all:

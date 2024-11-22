@@ -4,19 +4,24 @@ credits:
 
 default:
     cc      gcc
-    flags   -Wall -Wextra -fsanitize=address,null
+    flags   -O3
+    dflags   -Wall -Wextra -fsanitize=address,null
     src     ./src/*
     inc     ./include
     filename hbuild
-    exec     compile install
+    exec     debug
 
 compile:
-    exec    1
+    exec    1 install
     1       $cc -I $inc $flags $src -o $filename
 
 install:
     exec    1
     1       mv ./$filename ~/.local/bin/$filename
+
+debug:
+    exec    1
+    1       $cc -I $inc $dflags $src -o $filename
 
 git:
     exec    add commit push

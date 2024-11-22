@@ -1,4 +1,4 @@
-# Hugo's build tool
+# Hugo's building tool
 
 ## NAME
 hbuild - Hugo's building tool.

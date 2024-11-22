@@ -5,4 +5,3 @@ CC = gcc
 
 all:
 	 $(CC) $(SRC) $(FLAGS) -I $(INCL) -o hbuild
-	 ./hbuild install
